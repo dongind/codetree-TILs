@@ -1,6 +1,3 @@
-from collections import deque
-
-
 def put_sushi(x, t, name, sushi_num):
     rotate_sushi[(x - t) % L].append(name)
     return sushi_num + 1
@@ -38,7 +35,6 @@ def eat_sushi(t, user_num, sushi_num):
 
 
 L, Q = map(int, input().split())
-x_pos = 0
 user_num = 0
 sushi_num = 0
 rotate_sushi = [[] for _ in range(L)]
