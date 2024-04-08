@@ -25,37 +25,35 @@ def eat_sushi(t, user_num, sushi_num):
     if not user_num or not sushi_num:
         return user_num, sushi_num
 
-    for i in range(L):
-        if not user_list.get(i, False):
+    user_pop_list = []
+
+    for x in user_list.keys():
+
+        if not rotate_sushi.get((x - t) % L, False):
             continue
 
-        if not rotate_sushi.get((i - t) % L , False):
+        sushi_table = rotate_sushi[(x - t) % L]
+        user_name, count = user_list[x]["name"], user_list[x]["count"]
+
+        if not sushi_table.get(user_name, False):
             continue
 
-        sushi_table = rotate_sushi[(i - t) % L]
-        user_name, count = user_list[i]["name"], user_list[i]["count"]
-        pop_list = []
+        if count > sushi_table[user_name]:
+            user_list[x]["count"] -= sushi_table[user_name]
+            sushi_num -= sushi_table[user_name]
+            sushi_table.pop(user_name, None)
 
-        for name in sushi_table.keys():
-            if not name == user_name:
-                continue
+        elif count == sushi_table[user_name]:
+            user_pop_list.append(x)
+            sushi_num -= sushi_table[user_name]
+            sushi_table.pop(user_name, None)
 
-            sushi_num -= sushi_table[name]
+        else:
+            sushi_table[user_name] -= count
+            user_pop_list.append(x)
 
-            if count > sushi_table[name]:
-                user_list[i]["count"] -= sushi_table[name]
-                pop_list.append(name)
-
-            elif count == sushi_table[name]:
-                user_num = leave_sushi(i, user_num)
-                pop_list.append(name)
-
-            else:
-                sushi_table[name] -= count
-                user_num = leave_sushi(i, user_num)
-
-        for name in pop_list:
-            sushi_table.pop(name, None)
+    for user_pos in user_pop_list:
+        user_num = leave_sushi(user_pos, user_num)
 
     return user_num, sushi_num
 
