@@ -1,5 +1,13 @@
 def put_sushi(x, t, name, sushi_num):
-    rotate_sushi[(x - t) % L].append(name)
+    if not rotate_sushi.get((x - t) % L, False):
+        rotate_sushi[(x - t) % L] = {name : 1}
+
+    elif not rotate_sushi[(x - t) % L].get(name, False):
+        rotate_sushi[(x - t) % L][name] = 1
+
+    else:
+        rotate_sushi[(x - t) % L][name] += 1
+
     return sushi_num + 1
 
 
@@ -20,26 +28,46 @@ def eat_sushi(t, user_num, sushi_num):
     for i in range(L):
         if not user_list[i]:
             continue
-        sushi_table = rotate_sushi[(i - t) % L]
-        user_name = user_list[i]["name"]
 
-        for name in sushi_table:
-            if name == user_name:
-                user_list[i]["count"] -= 1
-                sushi_num -= 1
-                if not user_list[i]["count"]:
-                    user_num = leave_sushi(i, user_num)
-        rotate_sushi[(i - t) % L] = list(filter(lambda x: x != user_name, sushi_table))
+        if not rotate_sushi.get((i - t) % L , False):
+            continue
+
+        sushi_table = rotate_sushi[(i - t) % L]
+        user_name, count = user_list[i]["name"], user_list[i]["count"]
+        pop_list = []
+
+        for name in sushi_table.keys():
+            if not name == user_name:
+                continue
+
+            sushi_num -= sushi_table[name]
+
+            if count > sushi_table[name]:
+                user_list[i]["count"] -= sushi_table[name]
+                pop_list.append(name)
+
+            elif count == sushi_table[name]:
+                user_num = leave_sushi(i, user_num)
+                pop_list.append(name)
+
+            else:
+                sushi_table[name] -= count
+                user_num = leave_sushi(i, user_num)
+
+        for name in pop_list:
+            sushi_table.pop(name, None)
 
     return user_num, sushi_num
 
 
 L, Q = map(int, input().split())
+x_pos = 0
 user_num = 0
 sushi_num = 0
-rotate_sushi = [[] for _ in range(L)]
+rotate_sushi = dict()
 user_list = [False for _ in range(L)]
 last_t = 0
+
 
 for _ in range(Q):
 
