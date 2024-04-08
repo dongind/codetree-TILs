@@ -12,12 +12,12 @@ def put_sushi(x, t, name, sushi_num):
 
 
 def enter_sushi(x, name, n, user_num):
-    user_list[x] = ({"name": name, "count": n})
+    user_list[x] = {"name": name, "count": n}
     return user_num + 1
 
 
 def leave_sushi(x, user_num):
-    user_list[x] = False
+    user_list.pop(x, None)
     return user_num - 1
 
 
@@ -26,7 +26,7 @@ def eat_sushi(t, user_num, sushi_num):
         return user_num, sushi_num
 
     for i in range(L):
-        if not user_list[i]:
+        if not user_list.get(i, False):
             continue
 
         if not rotate_sushi.get((i - t) % L , False):
@@ -65,7 +65,7 @@ x_pos = 0
 user_num = 0
 sushi_num = 0
 rotate_sushi = dict()
-user_list = [False for _ in range(L)]
+user_list = dict()
 last_t = 0
 
 
